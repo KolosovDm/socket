@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<script src="/socket.io/socket.io.js"></script>
+	<style>
+		#chat{
+			border: 1px solid #757584;
+			width: 150px;
+			border-radius: 5px;
+			margin: 10px 0px;
+			padding: 2px;
+					}
+	</style>
+	<title>Поток данных</title>
+</head>
+<body>
+	<div id="chat"></div>
+	<input type="button" value="ПУСК" id = 'start'>
+	<input type="button" value="Стоп" id = 'stop'>
+	<script>		
+		var socket = io.connect('http://localhost:8080');		
+		//генерация массива случайных чисел через интервал времени их отправки через сокеты
+		function generate(){
+			var rnd = Math.floor(Math.random() * Math.floor(100));			
+			socket.emit('message', {name: name, msg: rnd })
+			time = setTimeout(generate, 10000);	
+		} 
+		//функция начала вещания чисел в чат
+		function startSpeek(){
+		//представтьесь
+		    name = prompt('Как вас звать?', 'Аноним');
+			generate(name);			
+			}
+		//функция прекращения вещания	
+		function stopSpeek(){
+		clearTimeout(time)
+			}
+		socket.on('response', function(data){
+			document.getElementById('chat').innerHTML += data.name + '   ' + data.msg + '<br>';
+		})	
+		document.getElementById('start').onclick = startSpeek;		
+		document.getElementById('stop').onclick = stopSpeek;		
+	</script>
+</body>
+</html>
